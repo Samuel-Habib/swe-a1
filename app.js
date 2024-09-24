@@ -1,12 +1,15 @@
 const readline = require('readline');
 const fs = require('fs');
-const { exit } = require('process');
-const { machine } = require('os');
 const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+
+let isExited = false;
+let isRead = false;
 
 function promptInterface(){
     rl.question('CSV File Name [Ex. sample.csv] (type \'exit\' to quit): ', (filePath) => {
         if (filePath.toLowerCase() === 'exit') {
+            isExited = true;
+            console.log(isExited)
             console.log('Exiting...');
             rl.close();
             return;
@@ -14,12 +17,12 @@ function promptInterface(){
         read(filePath); 
     });
 }
-promptInterface();
-
 
 function read(filePath){
   console.log(filePath)
-  if(!filePath.endsWith('.csv')) throw new Error("incorrect file format");
+  if(!filePath.endsWith('.csv')) {
+    throw new Error('Invalid file format. Please input a CSV')
+  };
   fs.readFile(filePath, 'utf8', (err, content) => {
       if (err) throw new Error('Error reading the file')
       const array = Arr(content, filePath)
@@ -28,9 +31,12 @@ function read(filePath){
       const diffArr = diff(array, maxColVar)
       var divLength = divderlength(diffArr, max)
       makeTable(array, diffArr, divLength)
-
+      isRead = true;
+      console.log(isRead + " isRead")
+      promptInterface()
   });
 }
+promptInterface()
 
 function Arr(data){
   // RETURNS ARRAY
